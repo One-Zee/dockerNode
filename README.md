@@ -31,7 +31,7 @@ CMD ["npm","run","dev"]
 
 
 ### **2. Build image from Dockerfile**
-###### _t_ --- tag for setting name of Docker image,
+###### _-t_ --- tag for setting name of Docker image,
 ###### _node-app-image_ --- name you give for new docker image,
 ###### _._ --- location of ***Dockerfile*** from current path.
 
