@@ -63,7 +63,7 @@ $(pwd)
  docker ps
 ```
 
-### **6. interact with docker containers files**
+### **6. Interact with docker container files**
 ###### _it_ --- tag for interactive mode,
 ###### _exec_ --- exucute following,
 ###### _node-app-container_ --- represents docker image nameTag,
