@@ -1,7 +1,36 @@
 # ***Express app Redis and Mongo db.***
 
-## **DOCKER**
-### **1. Build image**
+## **How to create node app with docker**
+
+### **1. setting up Dockerfile**
+- **1 step** -> _FROM_ = what image to pull / _node:15_ = name of the image and its version. 
+- **2 step** -> _WORKDIR_ = set up you directory / _/app_ = your working directory inside docker container.
+- **3 step** -> _COPY_ = copy the following from /  _package.json_ = what to copy / _._ = where to copy.
+- **4 step** -> _RUN_ = run the following  / _npm install_ = a command docker should run to install dependencies for project.
+- **5 step** -> _COPY_ = copy the following from / _._ = copy all the files and folders from your curent directory / _./_ = to docker working _/app_ directory.
+- **6 step** -> _EXPOSE_ = exposing port / _3000_ = port number.
+- **7 step** -> _CMD_ = what command  to run / _["npm","run","dev"]_ = development script using nodemon.
+
+#### **Exemple of _Dockerfile_**
+```
+FROM node:15
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+
+COPY . ./
+
+EXPOSE 3000
+
+CMD ["npm","run","dev"]
+```
+
+
+
+### **2. Build image from Dockerfile**
 ###### _t_ --- tag for setting name of Docker image,
 ###### _node-app-image_ --- name you give for new docker image,
 ###### _._ --- location of ***Dockerfile*** from current path.
@@ -10,7 +39,9 @@
  docker build -t node-app-image . 
 ```
 
-### **2. List all images**
+
+
+### **3. List all images**
 ###### _ls_ --- tag for listing (in this case images).,
 ###### _image_ --- represents docker images
 
@@ -18,7 +49,9 @@
  docker image ls  
 ```
 
-### **3. remove docker image**
+
+
+### **4. remove docker image**
 ###### _rm_ --- tag for removing,
 ###### _image_ --- represents docker images,
 ###### _d23a8cc69a73_ --- represents docker image id
@@ -32,9 +65,13 @@ or
  docker image rm node-app-image  
 ```
 
-### **4. Run container**
+
+
+### **5. Run container**
 ###### _-v_ --- tag for volumes,
-###### _%cd%:/app_ --- _pathToFolderOnLocation:pathToFolderOnContainer_:
+###### _%cd%:/app_ --- _pathToFolderOnLocation:pathToFolderOnContainer_
+
+#### **Commands to get current path:** 
 - cmd or Command shell:  
 ```
 %cd%
@@ -70,14 +107,18 @@ $(pwd)
  docker run --mount %cd%:/app -d -p 3000:3000 --name node-app-container node-app-image
 ```
 
-### **5. Show running containers**
+
+
+### **6. Show running containers**
 ###### _ps_ --- shows all running containers,
 
 ```
  docker ps
 ```
 
-### **6. Interact with docker container files**
+
+
+### **7. Interact with docker container files**
 ###### _it_ --- tag for interactive mode,
 ###### _exec_ --- exucute following,
 ###### _node-app-container_ --- represents docker image nameTag,
@@ -116,11 +157,12 @@ $(pwd)
 ```
 
 
-### **7. Stop the container _'forcefully'_**
+
+### **8. Stop the container _'forcefully'_**
 ###### _rm_ --- kil specific container,
 ###### _node-app-container_ --- container name,
 ###### _-f_ --- force it to execute the command
 
 ```
  docker rm node-app-container -f
- ```
+```
