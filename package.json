@@ -1,0 +1,26 @@
+{
+  "name": "dockernode",
+  "version": "1.0.0",
+  "description": "testing docker with node express app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon -L server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/One-Zee/dockerNode.git"
+  },
+  "author": "HarunI\u001b[D \u001b[Ibrahimović",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/One-Zee/dockerNode/issues"
+  },
+  "homepage": "https://github.com/One-Zee/dockerNode#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
