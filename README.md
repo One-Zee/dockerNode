@@ -89,7 +89,6 @@ $(pwd)
 ###### _--name_ --- tag  for naming your new docker container,
 ###### _node-app-container_ --- name you give for new docker container,
 ###### _run_ --- run container
-###### _--mount_ --- tag for docker mount:
 ###### _-v_ --- tag for docker volume or mount:
 
 #### **Docker Volumes** allows us to have ***persistant*** data.
@@ -101,10 +100,6 @@ $(pwd)
 ###### We can take all files inside our directory and sync them into the _'/app'_ directory of our container ,so that we dont have to continiously rebuild our image and redeploy container every time we make changes to our code or files.It will automatically _sync_ those two for us , to really speed up developmnent proccess.
 ```
  docker run -v %cd%:/app -d -p 3000:3000 --name node-app-container node-app-image
-```
-#### ***or***
-```
- docker run --mount %cd%:/app -d -p 3000:3000 --name node-app-container node-app-image
 ```
 
 
