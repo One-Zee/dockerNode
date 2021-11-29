@@ -258,9 +258,13 @@ services:
 ###### _docker-compose_ --- when running _docker-compose.yml_ file.
 ###### _up_ --- run the cointainer.
 ###### _-d_ --- detach from console.
+###### _--build_ --- it will force brand new build
 
 ```
-docker-compose up -d
+docker-compose up -d 
+```
+```
+docker-compose up -d --build
 ```
 
 ### **3. run the container**
