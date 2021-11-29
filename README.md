@@ -1,6 +1,6 @@
 # ***Express app Redis and Mongo db.***
 
-## **How to create node app with docker**
+## **How to create node app with dockerfile**
 
 ### **1. setting up Dockerfile**
 - **1 step** -> _FROM_ = what image to pull / _node:15_ = name of the image and its version. 
@@ -128,6 +128,7 @@ $(pwd)
 
 ### **6. Show running containers**
 ###### _ps_ --- shows all running containers,
+###### _-a_ --- tag for show all
 
 ```
  docker ps
@@ -140,7 +141,7 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAM
 ```
  docker ps -a
 ```
-### Response
+#### Response
 ```
 CONTAINER ID   IMAGE            COMMAND                  CREATED         STATUS                       PORTS     NAMES
 c3f516b19f4c   node-app-image   "docker-entrypoint.s…"   2 minutes ago   Exited (127) 2 minutes ago             node-app-container
@@ -153,7 +154,7 @@ c3f516b19f4c   node-app-image   "docker-entrypoint.s…"   2 minutes ago   Exite
 ###### _node-app-container_ --- represents docker image nameTag,
 ###### _bash_ --- command to access our docker container files
 
-### **#Note1#** You can only run this command once the node-app-container is deployed.
+#### **#Note1#** You can only run this command once the node-app-container is deployed.
 
 ``` 
  docker exec -it node-app-container bash 
@@ -208,7 +209,7 @@ c3f516b19f4c   node-app-image   "docker-entrypoint.s…"   2 minutes ago   Exite
 ```
  docker volume ls
 ```
-### Response
+#### Response
 ```
 DRIVER    VOLUME NAME
 local     2c26089b24a337d9b50b45a7e4fa19107fb346cf01178d2a935e235293f42e5b
@@ -220,12 +221,53 @@ local     07d2547628b9bbb0b26d13d00b3653f89d76d9d8fec73bdaa9d2b9437dc2c4d6
 ###### _rm_ --- remove.
 ###### _07d2547628b9bbb0b26d13d00b3653f89d76d9d8fec73bdaa9d2b9437dc2c4d6_ --- volume name
 
-### Removes one volume
+#### Removes one volume
 ```
  docker volume rm 07d2547628b9bbb0b26d13d00b3653f89d76d9d8fec73bdaa9d2b9437dc2c4d6
 ```
 
-### Removes all volumes that are not being used curently
+#### Removes all volumes that are not being used curently
 ```
  docker volume prune
+```
+
+## **How to create node app with docker-compose**
+
+### **1. Create docker-compose.yml file.**
+
+```
+version: '3'
+
+services:
+  node-app-container:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      - PORT=3000
+    #env_file:
+    # - ./.env   
+
+```
+
+### **2. run the container**
+
+###### _docker-compose_ --- when running _docker-compose.yml_ file.
+###### _up_ --- run the cointainer.
+###### _-d_ --- detach from console.
+
+```
+docker-compose up -d
+```
+
+### **3. run the container**
+
+###### _down_ --- stop the cointainer.
+###### _-v_ --- delete all volumes connected to the container.
+
+```
+docker-compose down -v
 ```
