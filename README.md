@@ -8,8 +8,9 @@
 - **3 step** -> _COPY_ = copy the following from /  _package.json_ = what to copy / _._ = where to copy.
 - **4 step** -> _RUN_ = run the following  / _npm install_ = a command docker should run to install dependencies for project.
 - **5 step** -> _COPY_ = copy the following from / _._ = copy all the files and folders from your curent directory / _./_ = to docker working _/app_ directory.
-- **6 step** -> _EXPOSE_ = exposing port / _3000_ = port number.
-- **7 step** -> _CMD_ = what command  to run / _["npm","run","dev"]_ = development script using nodemon.
+- **6 step** -> _ENV_ = envoriment variable / _PORT_ = variableName / _3000_ = variableValue .
+- **7 step** -> _EXPOSE_ = exposing port / _${PORT}_ = port number , its manly used for documentacional purposes.
+- **8 step** -> _CMD_ = what command  to run / _["npm","run","dev"]_ = development script using nodemon.
 
 #### **Exemple of _Dockerfile_**
 ```
@@ -23,7 +24,9 @@ RUN npm install
 
 COPY . ./
 
-EXPOSE 3000
+ENV PORT 3000
+
+EXPOSE ${PORT}
 
 CMD ["npm","run","dev"]
 ```
@@ -89,20 +92,39 @@ $(pwd)
 ###### _--name_ --- tag  for naming your new docker container,
 ###### _node-app-container_ --- name you give for new docker container,
 ###### _run_ --- run container
-###### _-v_ --- tag for docker volume or mount:
+###### _-v_ --- tag for docker volume:
+###### _%cd%:/app:ro_ --- _pathToFolderOnLocation:pathToFolderOnContainer_ , ***:ro*** what it means is that it only reads files from our **local host machine** and not creating or deleting files that we changed in docker container **/app** directory.
+###### _/app/node_modules_ --- with tag **-v** preventing **bindMount** from deleting files in specified path.
+###### _--env | -e_ is used to set enviroment variables directly through command line.
+###### _PORT=4000_ setting env variable _PORT_ to _4000_ 
+###### _--env-file_ is used to set enviroment varible using .env file.
+###### _./.env_ path to your .env file.
 
 #### **Docker Volumes** allows us to have ***persistant*** data.
 #### In this case we used specific type of volume :
 > ***[bindMount](https://docs.docker.com/storage/bind-mounts/)***
 ###### **bind mount** allows us to sync a folder in our _local host machine_, to a folder in our _Docker container_.
+
 #### In combination with devDependencies
 > ***[nodemon](https://www.npmjs.com/package/nodemon)*** 
 ###### We can take all files inside our directory and sync them into the _'/app'_ directory of our container ,so that we dont have to continiously rebuild our image and redeploy container every time we make changes to our code or files.It will automatically _sync_ those two for us , to really speed up developmnent proccess.
-```
- docker run -v %cd%:/app -d -p 3000:3000 --name node-app-container node-app-image
-```
 
-
+#### During development:
+```
+ docker run -v %cd%:/app:ro -d -v /app/node_modules -p 3000:3000 --name node-app-container node-app-image
+```
+#### During production:
+```
+ docker run -d -p 3000:3000 --name node-app-container node-app-image
+```
+#### set **ENV** variables directly
+```
+ docker run -v %cd%:/app:ro -d -v /app/node_modules --env PORT=4000 -p 3000:4000 --name node-app-container node-app-image
+```
+#### set **ENV** variables from .env file in your directory
+```
+ docker run -v %cd%:/app:ro -d -v /app/node_modules --env-file ./.env -p 3000:3000 --name node-app-container node-app-image
+```
 
 ### **6. Show running containers**
 ###### _ps_ --- shows all running containers,
@@ -110,7 +132,19 @@ $(pwd)
 ```
  docker ps
 ```
-
+```
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAM
+```
+#### or if you want see all containers started or crashed.
+```
+ docker ps -a
+```
+### Response
+```
+CONTAINER ID   IMAGE            COMMAND                  CREATED         STATUS                       PORTS     NAMES
+c3f516b19f4c   node-app-image   "docker-entrypoint.s…"   2 minutes ago   Exited (127) 2 minutes ago             node-app-container
+```
 
 
 ### **7. Interact with docker container files**
@@ -119,13 +153,15 @@ $(pwd)
 ###### _node-app-container_ --- represents docker image nameTag,
 ###### _bash_ --- command to access our docker container files
 
-### **#Note#** You can only run this command inside running container.
+### **#Note1#** You can only run this command once the node-app-container is deployed.
 
 ``` 
  docker exec -it node-app-container bash 
 ```
 
-#### Basic git bash commands:
+### **#Note2#** You can only run this commands inside cli of running container.
+
+#### Basic commands:
 - _Enter folder:_
 ``` 
  cd folderName
@@ -150,7 +186,10 @@ $(pwd)
 ``` 
  mkdir folderName
 ```
-
+-_List all enviroment variables_
+``` 
+ printenv
+```
 
 
 ### **8. Stop the container _'forcefully'_**
@@ -160,4 +199,33 @@ $(pwd)
 
 ```
  docker rm node-app-container -f
+```
+
+### **9. List all volumes**
+###### _volume_ --- volume tag.
+###### _ls_ --- list all.
+
+```
+ docker volume ls
+```
+### Response
+```
+DRIVER    VOLUME NAME
+local     2c26089b24a337d9b50b45a7e4fa19107fb346cf01178d2a935e235293f42e5b
+local     07d2547628b9bbb0b26d13d00b3653f89d76d9d8fec73bdaa9d2b9437dc2c4d6
+```
+
+### **10. delete volumes**
+###### _volume_ --- volume tag.
+###### _rm_ --- remove.
+###### _07d2547628b9bbb0b26d13d00b3653f89d76d9d8fec73bdaa9d2b9437dc2c4d6_ --- volume name
+
+### Removes one volume
+```
+ docker volume rm 07d2547628b9bbb0b26d13d00b3653f89d76d9d8fec73bdaa9d2b9437dc2c4d6
+```
+
+### Removes all volumes that are not being used curently
+```
+ docker volume prune
 ```
