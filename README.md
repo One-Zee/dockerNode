@@ -235,6 +235,8 @@ local     07d2547628b9bbb0b26d13d00b3653f89d76d9d8fec73bdaa9d2b9437dc2c4d6
 
 ### **1. Create docker-compose.yml file.**
 
+###### _version:'3'_ --- set version of docker-compose.yml file for more _[click_here](https://docs.docker.com/compose/compose-file/compose-versioning/)_.
+
 ```
 version: '3'
 
@@ -274,4 +276,115 @@ docker-compose up -d --build
 
 ```
 docker-compose down -v
+```
+
+## **How to separate production and development enviroments using docker-compose**
+
+### **1. Set the _Dockerfile_**
+
+###### _ARG_ --- Argument that gets past into our Dockerfile when its building our docker image.
+
+```
+FROM node:15
+
+WORKDIR /app
+
+COPY package.json .
+
+ARG NODE_ENV
+
+RUN if [ "NODE_ENV" = "development" ]; \
+        then npm install; \
+        else npm install --only=production; \
+        fi
+
+COPY . ./
+
+ENV PORT 3000
+
+EXPOSE ${PORT}
+
+CMD ["node","server.js"]
+```
+
+
+### **1. Create docker-compose.yml file.**
+
+```
+version: '3'
+
+services:
+  node-app-container:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000  
+
+```
+
+### **2. Create docker-compose.dev.yml file.**
+
+```
+version: '3'
+
+services:
+  node-app-container:
+    build:
+      context: .
+      args: 
+        - NODE_ENV:development
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+```
+
+### **3. Create docker-compose.prod.yml file.**
+
+```
+version: '3'
+
+services:
+  node-app-container:
+    build:
+      context: .
+      args: 
+        - NODE_ENV:production
+    environment:
+      - NODE_ENV=production
+    command: node server.js
+```
+
+>**NOTE**- Order of files mentioned in command prompt matters!.
+
+- Add _--build_ tag at the end if needed.
+```
+--build
+```
+
+### **4. How to run in **development** mode.**
+
+###### _-f_ --- tag represents file.
+###### _docker-compose.yml_ --- **First file**. yml File that shares properties of _dev_ and _prod_
+###### _docker-compose.dev.yml_ --- **Second file**. What a _development_ build should contain.
+
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d 
+```
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml down -v 
+```
+
+### **5. How to run in **production** mode.**
+
+###### _docker-compose.prod.yml_ --- **Second file**. What a _production_ build should contain.
+
+```
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d 
+```
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml down -v
 ```
