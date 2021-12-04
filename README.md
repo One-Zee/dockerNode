@@ -393,7 +393,7 @@ services:
     build:
       context: .
       args: 
-        - NODE_ENV: production
+        - NODE_ENV=production
     environment:
       - NODE_ENV=production
     command: node server.js
@@ -648,7 +648,7 @@ services:
     build:
       context: .
       args: 
-        - NODE_ENV: development
+        - NODE_ENV=development
     volumes:
       - ./:/app
       #app crashes with this option its not supposed to

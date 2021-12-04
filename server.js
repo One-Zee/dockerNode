@@ -3,9 +3,17 @@ require('./src/db/mongooseConn')
 
 const app = express();
 
-app.get('/',(req,res)=>{
-    res.send('<h1>Hi There</h1>')
-})
+app.use(express.json())
+
+/**
+ *  Get routes
+ */
+const postRoutes = require('./src/routes/postRoutes')
+
+/**
+ * Implement routes
+ */
+app.use('/api/posts/',postRoutes);
 
 const PORT = process.env.PORT || 3000;
 

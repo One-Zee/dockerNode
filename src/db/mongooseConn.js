@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { MONGO_IP , MONGO_PASSWORD , MONGO_USER , MONGO_PORT } = require('../../config/config');
+const { MONGO_IP , MONGO_PASSWORD , MONGO_USER , MONGO_PORT } = require('../config/config');
 const mongoURL = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`;
 
 const connectWithRetry = () =>{
