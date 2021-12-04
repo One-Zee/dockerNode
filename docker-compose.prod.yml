@@ -5,7 +5,7 @@ services:
     build:
       context: .
       args: 
-        - NODE_ENV:production
+        - NODE_ENV: production
     environment:
       - NODE_ENV=production
     command: node server.js

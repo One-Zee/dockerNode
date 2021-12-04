@@ -374,7 +374,7 @@ services:
     build:
       context: .
       args: 
-        - NODE_ENV:development
+        - NODE_ENV: development
     volumes:
       - ./:/app
       - /app/node_modules
@@ -393,7 +393,7 @@ services:
     build:
       context: .
       args: 
-        - NODE_ENV:production
+        - NODE_ENV: production
     environment:
       - NODE_ENV=production
     command: node server.js
@@ -556,4 +556,110 @@ docker network ls
 #### Get all details of specific network.
 ```
 docker network inspect dockernode_default
+```
+
+## **1. depends_on**
+
+##### Because our _node-app-container_ container will try to connect to _mongo_ container/service and will throw error if container isnt running , we have to tell docker to run the _mongo_ container before _node-app-container_.
+##### 
+#### Using `depends_on` we can tell what _node-app-container_ container  depends on.
+
+### ***docker-compose.yml*** file
+```
+version: '3'
+
+services:
+  node-app-container:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=one_zee
+      - MONGO_INITDB_ROOT_PASSWORD=password1
+    volumes:
+      - mongo-db:/data/db
+
+
+volumes:
+  mongo-db:
+  ``` 
+
+#### But even `depends_on` does not solve our issue.
+
+##### Docker has no idea that _mongo_ container has fully initialised,
+##### it only spins up the container before the other container, it does not do any checks to see if our _mongo_ container is up and listening for connections before our _node-app-container_ is up.
+
+##### npm  `mongoose` will try reconnecting for _30 seconds_ automatically,
+##### but after time runs out it will **crashout**.
+
+#### set **node app** to be smart about it. 
+
+### ***mongooseConn.js*** file
+```
+const mongoose = require('mongoose');
+const { MONGO_IP , MONGO_PASSWORD , MONGO_USER , MONGO_PORT } = require('../../config/config');
+const mongoURL = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`;
+
+const connectWithRetry = () =>{
+    //mongoose.connect('mongodb://username:password@host:port/database?options...');
+    mongoose.connect(mongoURL,{ useNewUrlParser: true , useUnifiedTopology: true},(err)=>{
+        if(!err){
+            console.log("connected to mongodb..")
+        }else{
+            console.log("not connected...");
+            setTimeout(connectWithRetry,5000)
+        }
+    });
+    
+}
+
+connectWithRetry();
+``` 
+#### To test this try running only `node-app-container` container:
+##### By specifying the name of the container at the end.
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d node-app-container 
+```
+#### YOU WILL NOTICE IT STARTED BOTH CONTAINERS/SERVICES
+### ***Why does it run both?***
+#### Because we used `depends_on` in our ***docker-compose.yml*** file it will start our mongo container anyway.
+#### So we have to use another _tag_ `--no-deps`
+> _--no-deps_
+##### Dont start linked services
+
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --no-deps node-app-container 
+```
+
+## **2. add ENV variables for MONGODB connection**
+
+### **docker-compose.dev.yml** file
+```
+version: '3'
+
+services:
+  node-app-container:
+    build:
+      context: .
+      args: 
+        - NODE_ENV: development
+    volumes:
+      - ./:/app
+      #app crashes with this option its not supposed to
+      #- /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - MONGO_USER=one_zee
+      - MONGO_PASSWORD=password1      
+    command: npm run dev
+  mongo:
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=one_zee
+      - MONGO_INITDB_ROOT_PASSWORD=password1
 ```
