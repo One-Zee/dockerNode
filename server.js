@@ -8,12 +8,14 @@ app.use(express.json())
 /**
  *  Get routes
  */
-const postRoutes = require('./src/routes/postRoutes')
+const postRoutes = require('./src/routes/postRoutes');
+const authRoutes = require('./src/routes/authRoutes');
 
 /**
  * Implement routes
  */
 app.use('/api/posts/',postRoutes);
+app.use('/api/',authRoutes);
 
 const PORT = process.env.PORT || 3000;
 

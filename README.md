@@ -663,3 +663,5 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=one_zee
       - MONGO_INITDB_ROOT_PASSWORD=password1
 ```
+
+##### npm rebuild bcrypt --build-from-source
