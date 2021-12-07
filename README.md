@@ -665,3 +665,14 @@ services:
 ```
 
 ##### npm rebuild bcrypt --build-from-source
+
+##### add or remove dependecies or simply changing the package.json ,the changes can not be applied immediately to our docker container without first bringing container down then up.
+
+##### Docker is smart enough to see the changes made to _docker-compose.yml_ file by simply using `up` and `--build` tag.
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+```
+##### But because your app will reuse your _anonymous_ volume with all old dependencies we need to add another tag `-V` (capital 'V') which will create new anonymous volume with our freshly installed dependecies.
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build -V
+```
