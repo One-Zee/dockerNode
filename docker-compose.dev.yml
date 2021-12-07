@@ -13,7 +13,8 @@ services:
     environment:
       - NODE_ENV=development
       - MONGO_USER=one_zee
-      - MONGO_PASSWORD=password1      
+      - MONGO_PASSWORD=password1
+      - SESSION_SECRET=someSecretString    
     command: npm run dev
   mongo:
     environment:
