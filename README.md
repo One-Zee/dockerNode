@@ -427,7 +427,7 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml down -v
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d 
 ```
 ```
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml down -v
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml down -v
 ```
 
 ## **How to add mongodb in docker with node js app**
